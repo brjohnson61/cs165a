@@ -8,8 +8,14 @@ class Word:
     def __init__(self, name):
         self.name = name
         self.count = 0
+        self.documents = 0
         self.tf_idf = None
 
     def update(self, count):
         self.count = self.count + count
+        self.documents = self.documents + 1
+
+    def calculateTF(self):
+        
+        
 
