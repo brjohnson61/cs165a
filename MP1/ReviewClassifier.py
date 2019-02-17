@@ -2,7 +2,6 @@ from Bag_of_Words import Bag_of_Words
 from Term_Frequency_Inverse_Document_Frequency import Term_Frequency_Inverse_Document_Frequency
 from ReviewType import ReviewType
 from enum import Enum
-from numpy import argmax
 
 class ReviewClassifier:
     
@@ -23,14 +22,33 @@ class ReviewClassifier:
         
 
     def evaluate(self, file):
-        evalBag = Bag_of_Words()
         listOfReviews = self.niceInputFromFile(file)
         listOfReviewDictionaries = self.getUniqueWordCountDict(listOfReviews)
-        evalBag.appendReviews(listOfReviewDictionaries, "pos")
-        
-        ProbGivenPos = evalBag.getProbWordsGivenClass("pos")
-        ProbGivenPos = evalBag.getProbWordsGivenClass("neg")
+        posProb = 1
+        negProb = 1
+        negReviews = 0
+        posReviews = 0
+        #printCounter = 0
 
+        for review in listOfReviewDictionaries:
+            for word in review:
+                posProb = posProb * self.bag.getProbOfWordGivenClass(word, "pos")
+                negProb = negProb * self.bag.getProbOfWordGivenClass(word, "neg")
+            if((posProb * (self.bag.posDocuments/self.bag.totalDocuments)) > (negProb * (self.bag.negDocuments/self.bag.totalDocuments))):
+                posReviews = posReviews + 1
+            else: 
+                negReviews = negReviews + 1
+
+            """ if(printCounter < 100):
+                print("NegProb: " + str(negProb))
+                print("PosProb: " + str(posProb))
+                printCounter = printCounter + 1 """
+        
+        print("Positive Reviews: " + str(posReviews) + " " + str((posReviews/(posReviews + negReviews))*100) + "%.")
+        print("Negitive Reviews: " + str(negReviews) + " " + str((negReviews/(posReviews + negReviews))*100) + "%.")
+
+
+        
 
     def evaluateAndTrain(self, file):
         print("stub!")
@@ -114,4 +132,13 @@ if __name__ == "__main__":
     classifier = ReviewClassifier()
     classifier.train("training_pos.txt", "pos")
     classifier.train("training_neg.txt", "neg")
+    fHandle = open("log.txt", "w")
+    for item in classifier.bag.wordListNeg:
+        fHandle.write(item)
+
+    for item in classifier.bag.wordListPos:
+        fHandle.write(str(item))
+
+    classifier.evaluate("test_pos_public.txt")
+    classifier.evaluate("test_neg_public.txt")
 

@@ -2,26 +2,19 @@ import Term_Frequency_Inverse_Document_Frequency
 from math import log1p
 
 class Word:
-    """Word Class:
-    Members:
-    name - (string) the string representing the word
-    count - (int) the number of times the word has been seen"""
     def __init__(self, name = "", count = 0, documents = 0):
         self.name = name
         self.count = count
         self.documents = documents
 
-    def __eq__(self, other):
-        return self.name == other.name
+    def __str__(self):
+        return ("{\n""name = " + self.name + "\n" + "count = " + str(self.count) + "\n" + "documents = " + str(self.documents) + "\n}")
 
     def __eq__(self, other):
-        return self.name == other
+        return self.getName() == other.getName()
 
     def __ne__(self, other):
-        return self.name != other.name
-
-    def __ne__(self, other):
-        return self.name != other.name
+        return self.getName() != other.getName()
 
     def __hash__(self):
         return hash(self.name)
@@ -32,5 +25,7 @@ class Word:
 
     def getTF(self):
         return (log1p(self.count/self.documents))
+    
+    def getName(self):
+        return self.name
         
-

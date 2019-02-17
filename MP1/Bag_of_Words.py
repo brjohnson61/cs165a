@@ -15,13 +15,13 @@ class Bag_of_Words:
 
     def appendReviews(self, ReviewDictionaries, rType):
         if(rType == "pos"):
-            for review in ReviewDictionaries[:1000]:
+            for review in ReviewDictionaries[:400]:
                 for keyword in review:
                     word = Word(keyword, review[keyword], 1)
                     self.append(word, rType)
                 self.posDocuments = self.posDocuments + 1
         elif(rType == "neg"):
-            for review in ReviewDictionaries[:1000]:
+            for review in ReviewDictionaries[:400]:
                 for keyword in review:
                     word = Word(keyword, review[keyword], 1)
                     self.append(word, rType)
@@ -31,12 +31,12 @@ class Bag_of_Words:
 
     def append(self, word, rType):
         if(rType == "pos"):
-            if(word in self.wordListPos):
+            if(word.name in self.wordListPos):
                 self.updateWord(word, rType)
             else:
                 self.appendWord(word, rType)
         elif(rType == "neg"):
-            if(word in self.wordListNeg):
+            if(word.name in self.wordListNeg):
                 self.updateWord(word, rType)
             else:
                 self.appendWord(word, rType)
@@ -60,21 +60,22 @@ class Bag_of_Words:
     def getTF_IDF(self, word, rType):
         if(rType == "pos"):
             if(word in self.wordListPos):
-                return self[word.name].getTF() * self.totalDocuments
+                return self.wordListPos[word.name].getTF() * self.totalDocuments
             else:
                 return 0
         elif(rType == "neg"):
             if(word in self.wordListNeg):
-                return self[word.name].getTF() * self.totalDocuments
+                return self.wordListNeg[word.name].getTF() * self.totalDocuments
             else:
                 return 0
 
-    def getProbWordsGivenClass(self, rType):
+    def getProbOfWordGivenClass(self, word, rType):
         bagSublist = {}
         totalWordsInBag = 0
         prob = 1
         totalWordsInBag = 0
-        alpha = 1
+        alpha = 0.001
+        count = 0
         if(rType == "pos"):
             bagSublist = self.wordListPos
             totalWordsInBag = self.posWords
@@ -87,7 +88,10 @@ class Bag_of_Words:
         if(len(bagSublist) == 0 or totalWordsInBag == 0):
             return 0
         else:
-            for word in bagSublist:
-                prob = prob * ((word.count + alpha)/(totalWordsInBag + (alpha*(self.posWords + self.negWords))))
-            return log1p(prob)
+            if(word in bagSublist): 
+                count = bagSublist[word].count 
+                """ if(count != 0):
+                    print(count) """
+            prob = ((count + alpha)/(totalWordsInBag + (alpha*(self.posWords + self.negWords))))
+            return (prob)
         
