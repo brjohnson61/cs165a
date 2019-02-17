@@ -7,12 +7,8 @@ class ReviewClassifier:
     
     def __init__(self):
         self.bag = Bag_of_Words()
-
-    def __del__(self):
-        self.bag.__del__()
   
     def train(self, file, rType):
-        
         listOfReviews = self.niceInputFromFile(file)
         listOfReviewDictionaries = self.getUniqueWordCountDict(listOfReviews)
 
@@ -30,28 +26,27 @@ class ReviewClassifier:
         negProb = 1
         negReviews = 0
         posReviews = 0
+        getFirstProbs = True
         #printCounter = 0
+        print(self.bag.posDocuments)
+        print(self.bag.negDocuments)
 
         for review in listOfReviewDictionaries:
             for word in review:
                 posProb = posProb * self.bag.getProbOfWordGivenClass(word, "pos")
                 negProb = negProb * self.bag.getProbOfWordGivenClass(word, "neg")
+                if(getFirstProbs):
+                    print("posProb: " + str(posProb))
+                    print("negProb: " + str(negProb))
+                    getFirstProbs = False
             if((posProb * (self.bag.posDocuments/self.bag.totalDocuments)) > (negProb * (self.bag.negDocuments/self.bag.totalDocuments))):
                 posReviews = posReviews + 1
             else: 
                 negReviews = negReviews + 1
-
-            """ if(printCounter < 100):
-                print("NegProb: " + str(negProb))
-                print("PosProb: " + str(posProb))
-                printCounter = printCounter + 1 """
         
         print("Positive Reviews: " + str(posReviews) + " " + str((posReviews/(posReviews + negReviews))*100) + "%.")
         print("Negitive Reviews: " + str(negReviews) + " " + str((negReviews/(posReviews + negReviews))*100) + "%.")
-
-
-        
-
+  
     def evaluateAndTrain(self, file):
         print("stub!")
 
@@ -94,52 +89,44 @@ class ReviewClassifier:
         trainingReviewsString = trainingReviewsString.replace("~", " ")
         trainingReviewsString = trainingReviewsString.replace("`", " ")
         #trainingReviewsString = trainingReviewsString.replace("", "i")
+        trainingReviewsString = trainingReviewsString.replace('', "")
+        trainingReviewsString = trainingReviewsString.replace(" d ", " ")
         trainingReviewsString = trainingReviewsString.replace("/", " ")
         for stopWord in stopWords:
-            trainingReviewsString = trainingReviewsString.replace(stopWord, " ")
+            trainingReviewsString = trainingReviewsString.replace(" " + stopWord + " ", " ")
 
         reviewList = trainingReviewsString.split("<br  ><br  >")
-        
-        # for review in reviewList:
-        #     wordSet = set(review.split(" "))
-        #     for uniqueWord in wordSet:
-        #         reviewDict[uniqueWord] = review.count(uniqueWord)
 
-        #     listOfParsedReveiws.append(reviewDict)
-        
+        print("ReviewListLength: " + str(len(reviewList)))
         return reviewList
 
     def getUniqueWordCountDict(self, reviewList):
-        listOfParsedReveiws = []
-        reviewDict = {}
+        listOfParsedReviews = []
         for review in reviewList:
+            reviewDict = {}
             wordSet = set(review.split(" "))
             for uniqueWord in wordSet:
-                reviewDict[uniqueWord] = review.count(uniqueWord)
+                if(uniqueWord):
+                    reviewDict[uniqueWord] = review.count(uniqueWord)
 
-            listOfParsedReveiws.append(reviewDict)
+            listOfParsedReviews.append(reviewDict)
         
-        return listOfParsedReveiws
+        return listOfParsedReviews
 
     def getStopWords(self):
-        file = open("stop_words.txt", "rt")
         stopWordsList = []
-
-        for stopWord in file:
-            stopWordsList.append(stopWord.rstrip("\n"))
-        
+        with open("stop_words.txt", "rt") as file:
+            for stopWord in file:
+                stopWordsList.append(stopWord.rstrip("\n"))
         return stopWordsList
      
 if __name__ == "__main__":
     classifier = ReviewClassifier()
     classifier.train("training_pos.txt", "pos")
     classifier.train("training_neg.txt", "neg")
-    fHandle = open("log.txt", "w")
-    for item in classifier.bag.wordListNeg:
-        fHandle.write(item)
-
-    for item in classifier.bag.wordListPos:
-        fHandle.write(str(item))
+    with open("log.txt", "w") as fHandle:
+        for item in classifier.bag.wordListPos.values():
+            fHandle.write(str(item))
 
     classifier.evaluate("test_pos_public.txt")
     classifier.evaluate("test_neg_public.txt")

@@ -13,31 +13,20 @@ class Bag_of_Words:
         self.posWords = 0
         self.negWords = 0
 
-    def __del__(self):
-        for item in self.wordListNeg:
-            self.wordListNeg.__delitem__(item)
-            self.wordListPos.__delitem__(item)
-            self.wordListNeg = None
-            self.totalDocuments = None
-            self.posDocuments = None
-            self.negDocuments = None
-            self.posWords = None
-            self.negWords = None
 
     def appendReviews(self, ReviewDictionaries, rType):
         if(rType == "pos"):
-            for review in range(2):
-                for keyword in ReviewDictionaries[review]:
-                    word = Word(keyword, ReviewDictionaries[review][keyword], 1)
+            for review in ReviewDictionaries:
+                for keyword in review:
+                    word = Word(keyword, review[keyword], 1)
                     self.append(word, rType)
                 self.posDocuments = self.posDocuments + 1
         elif(rType == "neg"):
-            for review in range(2):
-                for keyword in ReviewDictionaries[review]:
-                    word = Word(keyword, ReviewDictionaries[review][keyword], 1)
+            for review in ReviewDictionaries:
+                for keyword in review:
+                    word = Word(keyword, review[keyword], 1)
                     self.append(word, rType)
                 self.negDocuments = self.negDocuments + 1
-                    
         self.totalDocuments = self.totalDocuments + 1
 
     def append(self, word, rType):
