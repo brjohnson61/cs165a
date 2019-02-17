@@ -7,6 +7,14 @@ class Word:
         self.count = count
         self.documents = documents
 
+    def __del__(self):
+        self.name = ""
+        self.count = 0
+        self.documents = 0
+        self.name = None
+        self.count = None
+        self.documents = None
+
     def __str__(self):
         return ("{\n""name = " + self.name + "\n" + "count = " + str(self.count) + "\n" + "documents = " + str(self.documents) + "\n}")
 

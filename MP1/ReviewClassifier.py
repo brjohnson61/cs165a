@@ -6,8 +6,10 @@ from enum import Enum
 class ReviewClassifier:
     
     def __init__(self):
-        self.trained = False
         self.bag = Bag_of_Words()
+
+    def __del__(self):
+        self.bag.__del__()
   
     def train(self, file, rType):
         
@@ -91,7 +93,7 @@ class ReviewClassifier:
         trainingReviewsString = trainingReviewsString.replace(";", " ")
         trainingReviewsString = trainingReviewsString.replace("~", " ")
         trainingReviewsString = trainingReviewsString.replace("`", " ")
-        trainingReviewsString = trainingReviewsString.replace("í", "i")
+        #trainingReviewsString = trainingReviewsString.replace("", "i")
         trainingReviewsString = trainingReviewsString.replace("/", " ")
         for stopWord in stopWords:
             trainingReviewsString = trainingReviewsString.replace(stopWord, " ")
