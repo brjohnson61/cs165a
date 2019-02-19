@@ -1,8 +1,5 @@
 from Bag_of_Words import Bag_of_Words
-from Term_Frequency_Inverse_Document_Frequency import Term_Frequency_Inverse_Document_Frequency
-from ReviewType import ReviewType
-from enum import Enum
-from numpy import log1p
+#from numpy import log
 
 class ReviewClassifier:
     
@@ -22,7 +19,31 @@ class ReviewClassifier:
         print("appending " + str(len(listOfReviewDictionaries)) + " reviews dictionaries to " + rType + " bag...")
         bag.appendReviews(listOfReviewDictionaries)
 
-    def evaluateNaiveBoW(self, file):
+    def evaluateGaussianBoW(self, file):
+        listOfReviews = self.niceInputFromFile(file)
+        listOfReviewDictionaries = self.getUniqueWordCountDict(listOfReviews)
+        posProb = 0
+        negProb = 0
+        negReviews = 0
+        posReviews = 0
+        #vocabularySize = len(self.posBag.wordList.keys()) + len(self.negBag.wordList.keys())
+
+        for review in listOfReviewDictionaries:
+            posProb = 0
+            negProb = 0
+            for keyword in review:
+                posProb = posProb + self.posBag.getGaussianProbOfWordGivenClass(keyword, review[keyword])
+                negProb = negProb + self.negBag.getGaussianProbOfWordGivenClass(keyword, review[keyword])
+
+            if(posProb > negProb):
+                posReviews = posReviews + 1
+            elif(negProb > posProb): 
+                negReviews = negReviews + 1
+        print("###### GAUSSIAN BOW ######")
+        print("Positive Reviews: " + str(posReviews) + " " + str((posReviews/(posReviews + negReviews))*100) + "%.")
+        print("Negative Reviews: " + str(negReviews) + " " + str((negReviews/(posReviews + negReviews))*100) + "%.")
+
+    def evaluateMultinomialNaiveBoW(self, file):
         listOfReviews = self.niceInputFromFile(file)
         listOfReviewDictionaries = self.getUniqueWordCountDict(listOfReviews)
         posProb = 0
@@ -37,56 +58,44 @@ class ReviewClassifier:
             for word in review:
                 posProb = posProb + self.posBag.getProbOfWordGivenClass(word, vocabularySize)
                 negProb = negProb + self.negBag.getProbOfWordGivenClass(word, vocabularySize)
-                if(word == "dieflgkdfljgldksjdlkjslvkjaldvjlkajlkadjvlvjlf"):
-                    print("Positive occurrences: " + str(self.posBag.wordList[word].count))
-                    print("P(" + word + " | positive) = " + str(self.posBag.getProbOfWordGivenClass(word, vocabularySize)))
-                    print("Negative occurrences: " + str(self.negBag.wordList[word].count))
-                    print("P(" + word + " | negative) = " + str(self.negBag.getProbOfWordGivenClass(word, vocabularySize)))
-                    print()
-            
-            #print()
-            #print("posProbTotal: " + str(posProb))
-            #print("negProbTotal: " + str(negProb))
+                
             if(posProb > negProb):
                 posReviews = posReviews + 1
             elif(negProb > posProb): 
                 negReviews = negReviews + 1
-        print("###### NAIVE BOW ######")
+        print("###### MULTINOMIAL BOW ######")
         print("Positive Reviews: " + str(posReviews) + " " + str((posReviews/(posReviews + negReviews))*100) + "%.")
         print("Negative Reviews: " + str(negReviews) + " " + str((negReviews/(posReviews + negReviews))*100) + "%.")
 
-    def evaluateNaiveTFIDF(self, file):
+    def evaluateGaussianTFIDF(self, file):
         listOfReviews = self.niceInputFromFile(file)
         listOfReviewDictionaries = self.getUniqueWordCountDict(listOfReviews)
         posTFIDF = 0
         negTFIDF = 0
         negReviews = 0
         posReviews = 0
-        vocabularySize = len(self.posBag.wordList.keys()) + len(self.negBag.wordList.keys())
+        index = 0
+        
+        evalBag = Bag_of_Words()
+        evalBag.appendReviews(listOfReviewDictionaries)
 
         for review in listOfReviewDictionaries:
             posTFIDF = 0
             negTFIDF = 0
-            for word in review:
-                posTFIDF = posTFIDF + review[word]*self.posBag.getTFIDFOfWordGivenClass(word, vocabularySize)
-                negTFIDF = negTFIDF + self.negBag.getTFIDFOfWordGivenClass(word, vocabularySize)
-    
-            #print()
-            #print("posTFIDF: " + str(posTFIDF))
-            #print("negTFIDF: " + str(negTFIDF))
-            
+            for keyword in review:
+                tfidfOfUnknown = evalBag.wordList[keyword].statsListTotal[index]
+                posTFIDF = posTFIDF + self.posBag.getGaussianTFIDFOfWordGivenClass(keyword, tfidfOfUnknown)
+                negTFIDF = negTFIDF + self.negBag.getGaussianTFIDFOfWordGivenClass(keyword, tfidfOfUnknown)
+                
+            index = index + 1
             if(posTFIDF > negTFIDF):
                 posReviews = posReviews + 1
             elif(negTFIDF > posTFIDF): 
                 negReviews = negReviews + 1
-        
-        print("###### NAIVE TFIDF ######")
-        print()
+            
+        print("###### GAUSSIAN TFIDF ######")
         print("Positive Reviews: " + str(posReviews) + " " + str((posReviews/(posReviews + negReviews))*100) + "%.")
         print("Negative Reviews: " + str(negReviews) + " " + str((negReviews/(posReviews + negReviews))*100) + "%.")
-  
-    def evaluateAndTrain(self, file):
-        print("stub!")
 
     def niceInputFromFile(self, file):
         stopWords = self.getStopWords()
@@ -126,7 +135,6 @@ class ReviewClassifier:
         trainingReviewsString = trainingReviewsString.replace(";", " ")
         trainingReviewsString = trainingReviewsString.replace("~", " ")
         trainingReviewsString = trainingReviewsString.replace("`", " ")
-        #trainingReviewsString = trainingReviewsString.replace("", "i")
         trainingReviewsString = trainingReviewsString.replace('', "")
         trainingReviewsString = trainingReviewsString.replace(" d ", " ")
         trainingReviewsString = trainingReviewsString.replace("/", " ")
@@ -160,9 +168,29 @@ class ReviewClassifier:
      
 if __name__ == "__main__":
     classifier = ReviewClassifier()
+
+    print("##### TRAINING #####")
     classifier.train("training_pos.txt", "pos")
     classifier.train("training_neg.txt", "neg")
+    print()
 
-    classifier.evaluateNaiveBoW("test_neg_public.txt")
-    classifier.evaluateNaiveBoW("test_pos_public.txt")
+    print("*******Multinomial Bag of Words Results*******\n")
+    print("#### POSITIVE TEST ####")
+    classifier.evaluateMultinomialNaiveBoW("test_pos_public.txt")
+    print("\n#### NEGATIVE TEST ####")
+    classifier.evaluateMultinomialNaiveBoW("test_neg_public.txt")
+    print()
 
+    print("*******Gaussian Bag of Words Results*******\n")
+    print("#### POSITIVE TEST ####")
+    classifier.evaluateGaussianBoW("test_pos_public.txt")
+    print("\n#### NEGATIVE TEST ####")
+    classifier.evaluateGaussianBoW("test_neg_public.txt")
+    print()
+
+    print("*******Gaussian Tf-Idf Results*******\n")
+    print("#### POSITIVE TEST ####")
+    classifier.evaluateGaussianTFIDF("test_pos_public.txt")
+    print("\n#### NEGATIVE TEST ####")
+    classifier.evaluateGaussianTFIDF("test_neg_public.txt")
+    print()
