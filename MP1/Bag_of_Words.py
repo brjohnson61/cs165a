@@ -64,7 +64,7 @@ class Bag_of_Words:
             mu = self.wordList[word].statsList.mean()
             v = frequency
             if(sigma != 0):
-                prob = log(1/(sqrt(2*pi*(sigma**2)))) - (((v - mu)**2)/(2*sigma))
+                prob = log(1.0/float(sqrt(2*pi*(sigma**2)))) - (float((v - mu)**2)/float(2*sigma))
 
         return prob
     
@@ -76,7 +76,7 @@ class Bag_of_Words:
             mu = tfidf.mean()
             v = tfidfOther
             if(sigma !=0):
-                prob = log(1/(sqrt(2*pi*(sigma**2)))) - (((v - mu)**2)/(2*sigma))
+                prob = log(1.0/float(sqrt(2*pi*(sigma**2)))) - (float((v - mu)**2)/float(2*sigma))
        
         return prob
     

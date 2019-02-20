@@ -40,8 +40,8 @@ class ReviewClassifier:
             elif(negProb > posProb): 
                 negReviews = negReviews + 1
         print("###### GAUSSIAN BOW ######")
-        print("Positive Reviews: " + str(posReviews) + " " + str((posReviews/(posReviews + negReviews))*100) + "%.")
-        print("Negative Reviews: " + str(negReviews) + " " + str((negReviews/(posReviews + negReviews))*100) + "%.")
+        print("Positive Reviews: " + str(posReviews) + " " + str((float(posReviews)/float(posReviews + negReviews))*100) + "%.")
+        print("Negative Reviews: " + str(negReviews) + " " + str((float(negReviews)/float(posReviews + negReviews))*100) + "%.")
 
     def evaluateMultinomialNaiveBoW(self, file):
         listOfReviews = self.niceInputFromFile(file)
@@ -64,8 +64,8 @@ class ReviewClassifier:
             elif(negProb > posProb): 
                 negReviews = negReviews + 1
         print("###### MULTINOMIAL BOW ######")
-        print("Positive Reviews: " + str(posReviews) + " " + str((posReviews/(posReviews + negReviews))*100) + "%.")
-        print("Negative Reviews: " + str(negReviews) + " " + str((negReviews/(posReviews + negReviews))*100) + "%.")
+        print("Positive Reviews: " + str(posReviews) + " " + str((float(posReviews)/float(posReviews + negReviews))*100) + "%.")
+        print("Negative Reviews: " + str(negReviews) + " " + str((float(negReviews)/float(posReviews + negReviews))*100) + "%.")
 
     def evaluateGaussianTFIDF(self, file):
         listOfReviews = self.niceInputFromFile(file)
@@ -94,8 +94,8 @@ class ReviewClassifier:
                 negReviews = negReviews + 1
             
         print("###### GAUSSIAN TFIDF ######")
-        print("Positive Reviews: " + str(posReviews) + " " + str((posReviews/(posReviews + negReviews))*100) + "%.")
-        print("Negative Reviews: " + str(negReviews) + " " + str((negReviews/(posReviews + negReviews))*100) + "%.")
+        print("Positive Reviews: " + str(posReviews) + " " + str((float(posReviews)/float(posReviews + negReviews))*100) + "%.")
+        print("Negative Reviews: " + str(negReviews) + " " + str((float(negReviews)/float(posReviews + negReviews))*100) + "%.")
 
     def niceInputFromFile(self, file):
         stopWords = self.getStopWords()
