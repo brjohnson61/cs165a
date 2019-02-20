@@ -27,10 +27,8 @@ class Word:
 
     def update(self, other):
         self.count = self.count + other.count
-        #self.documents = self.documents + other.documents
         self.statsList[other.reviewIndex] = other.count
         self.statsListTotal[other.reviewIndex] = other.statsListTotal[other.reviewIndex]
-
 
     def getName(self):
         return self.name

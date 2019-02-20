@@ -1,5 +1,4 @@
 from Bag_of_Words import Bag_of_Words
-#from numpy import log
 
 class ReviewClassifier:
     
