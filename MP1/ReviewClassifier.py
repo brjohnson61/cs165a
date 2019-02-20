@@ -172,25 +172,21 @@ if __name__ == "__main__":
     print("##### TRAINING #####")
     classifier.train("training_pos.txt", "pos")
     classifier.train("training_neg.txt", "neg")
-    print()
-
-    print("*******Multinomial Bag of Words Results*******\n")
+    
+    print("\n*******Multinomial Bag of Words Results*******\n")
     print("#### POSITIVE TEST ####")
     classifier.evaluateMultinomialNaiveBoW("test_pos_public.txt")
     print("\n#### NEGATIVE TEST ####")
     classifier.evaluateMultinomialNaiveBoW("test_neg_public.txt")
-    print()
 
     print("*******Gaussian Bag of Words Results*******\n")
     print("#### POSITIVE TEST ####")
     classifier.evaluateGaussianBoW("test_pos_public.txt")
     print("\n#### NEGATIVE TEST ####")
     classifier.evaluateGaussianBoW("test_neg_public.txt")
-    print()
 
-    print("*******Gaussian Tf-Idf Results*******\n")
+    print("\n*******Gaussian Tf-Idf Results*******\n")
     print("#### POSITIVE TEST ####")
     classifier.evaluateGaussianTFIDF("test_pos_public.txt")
     print("\n#### NEGATIVE TEST ####")
     classifier.evaluateGaussianTFIDF("test_neg_public.txt")
-    print()
