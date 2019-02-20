@@ -1,4 +1,5 @@
 from Bag_of_Words import Bag_of_Words
+from sys import argv
 
 class ReviewClassifier:
     
@@ -168,24 +169,29 @@ class ReviewClassifier:
 if __name__ == "__main__":
     classifier = ReviewClassifier()
 
+    pos_train = argv[1]
+    neg_train = argv[2]
+    pos_test = argv[3]
+    neg_test = argv[4]
+
     print("##### TRAINING #####")
-    classifier.train("training_pos.txt", "pos")
-    classifier.train("training_neg.txt", "neg")
+    classifier.train(pos_train, "pos")
+    classifier.train(neg_train, "neg")
     
     print("\n*******Multinomial Bag of Words Results*******\n")
     print("#### POSITIVE TEST ####")
-    classifier.evaluateMultinomialNaiveBoW("test_pos_public.txt")
+    classifier.evaluateMultinomialNaiveBoW(pos_test)
     print("\n#### NEGATIVE TEST ####")
-    classifier.evaluateMultinomialNaiveBoW("test_neg_public.txt")
+    classifier.evaluateMultinomialNaiveBoW(neg_test)
 
     print("*******Gaussian Bag of Words Results*******\n")
     print("#### POSITIVE TEST ####")
-    classifier.evaluateGaussianBoW("test_pos_public.txt")
+    classifier.evaluateGaussianBoW(pos_test)
     print("\n#### NEGATIVE TEST ####")
-    classifier.evaluateGaussianBoW("test_neg_public.txt")
+    classifier.evaluateGaussianBoW(neg_test)
 
     print("\n*******Gaussian Tf-Idf Results*******\n")
     print("#### POSITIVE TEST ####")
-    classifier.evaluateGaussianTFIDF("test_pos_public.txt")
+    classifier.evaluateGaussianTFIDF(pos_test)
     print("\n#### NEGATIVE TEST ####")
-    classifier.evaluateGaussianTFIDF("test_neg_public.txt")
+    classifier.evaluateGaussianTFIDF(neg_test)
