@@ -312,13 +312,7 @@ class BoxesandGridsGame():
         Call the minimax/alpha-beta pruning  function to return the optimal move
         '''
         
-        ## change the next line of minimax/ aplpha-beta pruning according to your input and output requirments
-        
-        next_move=self.minimax(self.boardh,self.boardv)
-        #next_move_alpha=self.alphabetapruning();
-        
-        
-
+        max_value, next_move=self.minimax(temp_h,temp_v, 0.0, True, 0.0, 0.0)
         self.make_move(next_move,1);
         print ('move_made by player 2',next_move)
         
@@ -330,20 +324,60 @@ class BoxesandGridsGame():
      # number of input parameters of the function and the output of the function must 
      # be the optimal move made by the function.
 
-    def minimax(self,horizontal,vertical):
-        return self.list_possible_moves(horizontal,vertical)[0];
+    def minimax(self, horizontal, vertical, depth, isMax, myScore, opponentScore, alpha = -math.inf, beta = math.inf):
+        movesList = self.list_possible_moves(horizontal,vertical);
+        value = -math.inf if isMax else math.inf
+        #print("currentDepth is: " + str(depth))
+        returnMove = None
 
+        if(len(movesList) == 0 or depth >= 5):
+            #print("Found leaf")
+            return self.evaluate(myScore, opponentScore), returnMove;
+        else:
+            for move in movesList:
+                temp_h,temp_v,score=self.next_state(move,horizontal,vertical);
+                myNewScore = myScore + score if isMax else myScore
+                opponentNewScore = opponentScore if isMax else opponentScore + float(score)
 
-    def alphabetapruning():
-        return 
+                childValue, childMove = self.minimax(temp_h, temp_v, depth + 1, not isMax, myNewScore, opponentNewScore, alpha, beta)
 
+                if(isMax):
+                    if(childValue > value):
+                        value = childValue
+                        returnMove = move
+                    alpha = childValue if childValue > alpha else alpha
+                else:
+                    #print("This is a min node")
+                    if(childValue < value):
+                        value = childValue
+                        returnMove = move
+                    beta = childValue if childValue < beta else beta
+
+                #if(value >= beta and isMax):
+                    #print("isMax: " + str(isMax))
+                    #print("Pruning statistics:\n\tvalue: " + str(value) + "\n\talpha: " + str(alpha) + "\n\tbeta: " + str(beta))
+
+                if(self.alphabetapruning(value, alpha, beta, isMax)):
+                    #print("AlphaBetaPruning: alpha = " + str(alpha) + ", beta = " + str(beta) + ".")
+                    return value, None
+
+            return value, returnMove
+            
+
+    def alphabetapruning(self, value, alpha, beta, isMax):
+        if(isMax and value >= beta and value is not -math.inf):
+            return True
+        elif(not isMax and value <= alpha and value is not math.inf):
+            return True
+        else:
+            return False
        
     '''
     Write down you own evaluation strategy in the evaluation function 
     '''
-    def evaluate(self,horizontal,vertical):
-        value = 0;
-        return value
+    def evaluate(self, myAccumulatedScore, opponentAccumulatedScore):
+        return float(myAccumulatedScore - opponentAccumulatedScore);
+        
     
 
  
