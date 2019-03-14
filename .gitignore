@@ -2,5 +2,12 @@
 __pycache__/*
 .DS*
 ~*
+<<<<<<< HEAD
 .vscode
 .vscode/*
+=======
+.vs
+.vs/*
+.vscode
+.vscode/*
+>>>>>>> eec7562c6aacf1de64765000b93605a98c0bcf96
